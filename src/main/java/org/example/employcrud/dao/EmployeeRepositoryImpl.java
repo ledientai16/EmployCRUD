@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public class EmployeeRepositoryImpl implements EmployeeRepository{
-    private EntityManager theEntityManager;
+    private final EntityManager theEntityManager;
 
     @Autowired
     public EmployeeRepositoryImpl (EntityManager tempEntityManager) {
@@ -28,16 +28,13 @@ public class EmployeeRepositoryImpl implements EmployeeRepository{
 
     @Override
     public Employee findById(int id) {
-        String jpql = "From Employee Where id=:employId";
+        String jpql = "SELECT e FROM Employee e WHERE e.id = :employId";
         TypedQuery<Employee> employeeTypedQuery = theEntityManager.createQuery(jpql, Employee.class);
         employeeTypedQuery.setParameter("employId", id);
 
-        List<Employee> employees = employeeTypedQuery.getResultList();
-        Employee theEmployee = null;
-        if (employees.isEmpty()) {
-            theEmployee = employees.get(0);
-        }
-        return theEmployee;
+        Employee employee = employeeTypedQuery.getSingleResult();
+        return employee;
+
     }
 
     @Override
@@ -48,7 +45,12 @@ public class EmployeeRepositoryImpl implements EmployeeRepository{
     }
 
     @Override
+    @Transactional
     public void remove(int id) {
-
+        Employee theEmployee = findById(id);
+        System.out.println("theEmployee : " + theEmployee);
+        if (theEmployee != null) {
+            theEntityManager.remove(theEmployee);
+        }
     }
 }

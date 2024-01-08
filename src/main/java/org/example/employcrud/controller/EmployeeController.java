@@ -38,4 +38,19 @@ public class EmployeeController {
         }
         return "employ-form";
     }
+    @GetMapping("/delete")
+    public String remove(@RequestParam("empId") int id) {
+        System.out.println("id : " + id);
+        employeeService.remove(id);
+        return "redirect:/employees/employ-list";
+    }
+
+    @GetMapping("/showFormForUpdate")
+    public String showFormForUpdate(@RequestParam("empId") int id, Model theModel) {
+        Employee theEmployee = employeeService.findById(id);
+
+        theModel.addAttribute("theEmployee", theEmployee);
+
+        return "employ-form";
+    }
 }
